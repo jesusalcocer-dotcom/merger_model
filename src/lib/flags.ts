@@ -111,5 +111,27 @@ export function detectFlags(deal: DealState): Flag[] {
     });
   }
 
+  // Rule 9: Cap Table Reconciliation
+  const rolloverEntities = deal.entities.filter(e =>
+    e.roles.includes('seller') &&
+    deal.considerationFlows.some(f => f.type === 'rollover' && f.from === e.id)
+  );
+  if (rolloverEntities.length > 0) {
+    const rolloverWithoutOwnership = rolloverEntities.filter(
+      e => !deal.relationships.some(r => r.from === e.id && r.to === target.id && r.type === 'owns')
+    );
+    const totalOwnershipPct = deal.relationships
+      .filter(r => r.to === target.id && r.type === 'owns')
+      .reduce((sum, r) => sum + (r.params?.pct ?? 0), 0);
+    if (rolloverWithoutOwnership.length > 0 && totalOwnershipPct >= 100) {
+      const names = rolloverWithoutOwnership.map(e => e.name).join(', ');
+      flags.push({
+        severity: 'warning',
+        title: 'Cap Table Reconciliation',
+        description: `${names} appear to hold equity in ${target.name} (they are rolling equity into the buyer structure) but the ownership table accounts for 100% of ${target.name} equity without them. The cap table may not reconcile. Verify the source of their equity: direct shares, stock options, restricted stock, carried interest, or co-investment through a fund.`,
+      });
+    }
+  }
+
   return flags;
 }
