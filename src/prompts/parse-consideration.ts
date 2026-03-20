@@ -31,6 +31,7 @@ Rules:
 - Debt payoff: from is the acquisition vehicle, to is the lender. Timing is "closing".
 - Fees: from is the acquisition vehicle, to a "transaction advisors" entity (create one if needed with type: bank, role: []).
 - If amounts aren't specified exactly, estimate based on context or use 0 and note "TBD" in conditions.
+- Debt payoff flows must go FROM the acquisition vehicle TO the lender entity, never to the target company itself. The target is the obligor on the debt but the payment goes to the lenders. Transaction fees must go FROM the acquisition vehicle or buyer fund TO the 'Transaction Advisors' entity, never to the buyer fund itself.
 
 Return ONLY a valid JSON array. No markdown, no preamble.`,
     user: rawText,

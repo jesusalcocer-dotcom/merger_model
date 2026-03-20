@@ -25,6 +25,7 @@ Rules:
 - Every entity except the target should appear in at least one relationship.
 - If you identify an entity that should exist but isn't in the list, note it but do NOT add entities. Only use entity ids from the provided list.
 - Ownership chains should be complete: if Fund owns HoldCo owns AcqCo, that's two separate "owns" edges.
+- Do NOT create ownership edges that result from the transaction itself, such as management rollover equity into the buyer's holding company. Those post-closing ownership stakes are captured as consideration flows in Block 4, not as pre-existing relationships in Block 2. Only include relationships that exist BEFORE the transaction closes.
 
 Return ONLY a valid JSON array. No markdown, no preamble.`,
     user: rawText,

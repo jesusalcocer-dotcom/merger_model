@@ -17,6 +17,9 @@ Important rules:
 - If a sovereign wealth fund is mentioned as an LP, create it as a separate entity with type: sovereign.
 - An escrow agent is typically type: bank. Only include if escrow is mentioned.
 - An R&W insurer is type: bank, role: insurer. Only include if R&W insurance is mentioned.
+- If a PE fund forms an acquisition vehicle (HoldCo, AcqCo, MergerSub), the fund's role is 'parent', NOT 'buyer'. The acquisition vehicle that directly purchases the target or its shares gets roles ['buyer', 'acq_vehicle']. The fund is the economic buyer but legally it is the parent entity.
+- Always create an entity for existing lenders if the description mentions debt to be retired or paid off at closing. Name it '[Company] Lenders' with type: 'bank' and roles: ['lender']. Always create a 'Transaction Advisors' entity with type: 'bank' and roles: [] if transaction fees, expenses, or advisor fees are mentioned.
+- For US PE funds and acquisition vehicles described as LP or LLC without an explicit jurisdiction stated, default to 'Delaware'. Leave jurisdiction blank only if the entity's jurisdiction is truly unknown or non-US.
 
 Return ONLY a valid JSON array. No markdown, no preamble, no explanation.`,
     user: rawText,

@@ -1,26 +1,16 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { buildConsiderationPrompt } from '@/prompts/parse-consideration';
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+import { callLLM, AIModel } from '@/lib/ai-client';
 
 export async function POST(req: NextRequest) {
   try {
-    const { rawText, entities, relationships, structure } = await req.json();
+    const { rawText, entities, relationships, structure, model = 'gpt-5.4' } = await req.json();
     if (!rawText || !entities || !relationships || !structure) {
       return NextResponse.json({ error: 'rawText, entities, relationships, and structure are required' }, { status: 400 });
     }
 
     const prompt = buildConsiderationPrompt(rawText, entities, relationships, structure);
-
-    const response = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 4096,
-      system: prompt.system,
-      messages: [{ role: 'user', content: prompt.user }],
-    });
-
-    const text = response.content[0].type === 'text' ? response.content[0].text : '';
+    const text = await callLLM(prompt.system, prompt.user, model as AIModel);
 
     let parsed;
     try {

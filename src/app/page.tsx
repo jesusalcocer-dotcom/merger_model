@@ -22,6 +22,14 @@ const DEFAULT_STRUCTURE: Structure = {
   preReorgRequired: false,
 };
 
+type AIModel = 'gpt-5.4' | 'claude-sonnet-4-6' | 'claude-opus-4-6';
+
+const MODEL_OPTIONS: { value: AIModel; label: string }[] = [
+  { value: 'gpt-5.4', label: 'GPT-5.4' },
+  { value: 'claude-sonnet-4-6', label: 'Sonnet 4.6' },
+  { value: 'claude-opus-4-6', label: 'Opus 4.6' },
+];
+
 export default function Home() {
   const [rawText, setRawText] = useState('');
   const [entities, setEntities] = useState<Entity[]>([]);
@@ -32,6 +40,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [showDiagram, setShowDiagram] = useState(false);
   const [parsed, setParsed] = useState(false);
+  const [model, setModel] = useState<AIModel>('gpt-5.4');
 
   const dealState: DealState = {
     rawText,
@@ -56,7 +65,7 @@ export default function Home() {
         const res = await fetch('/api/parse/entities', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ rawText }),
+          body: JSON.stringify({ rawText, model }),
         });
         if (!res.ok) {
           const err = await res.json();
@@ -71,7 +80,7 @@ export default function Home() {
         const res = await fetch('/api/parse/relationships', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ rawText, entities: currentEntities }),
+          body: JSON.stringify({ rawText, entities: currentEntities, model }),
         });
         if (!res.ok) {
           const err = await res.json();
@@ -86,7 +95,7 @@ export default function Home() {
         const res = await fetch('/api/parse/structure', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ rawText, entities: currentEntities, relationships: currentRelationships }),
+          body: JSON.stringify({ rawText, entities: currentEntities, relationships: currentRelationships, model }),
         });
         if (!res.ok) {
           const err = await res.json();
@@ -106,6 +115,7 @@ export default function Home() {
             entities: currentEntities,
             relationships: currentRelationships,
             structure: currentStructure,
+            model,
           }),
         });
         if (!res.ok) {
@@ -123,7 +133,7 @@ export default function Home() {
       setError(message);
       setLoading(null);
     }
-  }, [rawText, entities, relationships, structure, parsed]);
+  }, [rawText, entities, relationships, structure, parsed, model]);
 
   const handleParse = () => parseFrom('entities');
 
@@ -144,6 +154,18 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-4 space-y-8">
+      <div className="flex justify-end">
+        <select
+          value={model}
+          onChange={e => setModel(e.target.value as AIModel)}
+          className="rounded border border-slate-200 px-2 py-1 text-xs text-slate-600 focus:border-blue-400 focus:outline-none"
+        >
+          {MODEL_OPTIONS.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+      </div>
+
       <TextInput
         rawText={rawText}
         onRawTextChange={setRawText}
