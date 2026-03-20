@@ -29,7 +29,7 @@ export default function EntityTable({ entities, onChange, onReparse, loading }: 
   };
 
   const toggleRole = (index: number, role: EntityRole) => {
-    const current = entities[index].roles;
+    const current = entities[index].roles ?? [];
     const updated = current.includes(role)
       ? current.filter(r => r !== role)
       : [...current, role];
@@ -94,7 +94,7 @@ export default function EntityTable({ entities, onChange, onReparse, loading }: 
                         key={role}
                         onClick={() => toggleRole(i, role)}
                         className={`px-1.5 py-0.5 rounded text-[10px] font-medium border transition-colors ${
-                          entity.roles.includes(role)
+                          (entity.roles ?? []).includes(role)
                             ? 'bg-blue-100 border-blue-300 text-blue-700'
                             : 'bg-slate-50 border-slate-200 text-slate-400 hover:bg-slate-100'
                         }`}

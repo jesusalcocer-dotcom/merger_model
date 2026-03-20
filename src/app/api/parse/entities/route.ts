@@ -30,7 +30,18 @@ export async function POST(req: NextRequest) {
       parsed = JSON.parse(cleaned);
     }
 
-    return NextResponse.json(unwrapArray(parsed));
+    const entities = unwrapArray(parsed).map((e: unknown, i: number) => {
+      const obj = (e && typeof e === 'object' ? e : {}) as Record<string, unknown>;
+      return {
+        id: obj.id ?? `entity-${i}`,
+        name: obj.name ?? '',
+        type: obj.type ?? 'c_corp',
+        jurisdiction: obj.jurisdiction ?? '',
+        roles: Array.isArray(obj.roles) ? obj.roles : [],
+        ...obj,
+      };
+    });
+    return NextResponse.json(entities);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('Entity parsing error:', message);
