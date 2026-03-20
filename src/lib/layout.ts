@@ -9,8 +9,6 @@ import {
 
 export type DiagramView = 'pre-closing' | 'transaction' | 'post-closing';
 
-const NODE_WIDTH = 200;
-const NODE_HEIGHT = 80;
 const COL_LEFT = 0;
 const COL_CENTER = 400;
 const COL_RIGHT = 800;
@@ -37,12 +35,6 @@ function getBorderColor(entity: Entity, side: 'sell' | 'buy' | 'target' | 'third
   }
 }
 
-function getSide(entity: Entity, sellIds: Set<string>, buyIds: Set<string>): 'sell' | 'buy' | 'target' | 'third' {
-  if (entity.roles.includes('target')) return 'target';
-  if (sellIds.has(entity.id)) return 'sell';
-  if (buyIds.has(entity.id)) return 'buy';
-  return 'third';
-}
 
 export function computeLayout(
   entities: Entity[],

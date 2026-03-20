@@ -1,4 +1,4 @@
-import { Entity, Relationship, ConsiderationFlow } from '@/types/deal';
+import { Entity, Relationship } from '@/types/deal';
 
 /** Get all entities on the sell-side of the target (trace "owns" edges backward to target) */
 export function getSellSideEntities(

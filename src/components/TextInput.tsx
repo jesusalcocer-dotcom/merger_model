@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 interface TextInputProps {
   rawText: string;
   onRawTextChange: (text: string) => void;
@@ -43,9 +41,13 @@ export default function TextInput({ rawText, onRawTextChange, onParse, loading }
           </div>
         )}
         <button
-          onClick={onParse}
-          disabled={!!loading || !rawText.trim()}
-          className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          onClick={() => { if (rawText.trim()) onParse(); }}
+          disabled={!!loading}
+          className={`rounded-lg px-5 py-2 text-sm font-medium text-white transition-colors ${
+            !loading && rawText.trim()
+              ? 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
+              : 'bg-blue-400 cursor-not-allowed'
+          }`}
         >
           Parse Deal
         </button>
