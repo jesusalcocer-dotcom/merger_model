@@ -52,6 +52,15 @@ export default function Home() {
 
   const flags: Flag[] = showDiagram ? detectFlags(dealState) : [];
 
+  const getResError = async (res: Response, fallback: string) => {
+    try {
+      const data = await res.json();
+      return data.error || fallback;
+    } catch {
+      return `${fallback} (${res.status})`;
+    }
+  };
+
   // Parse from a specific step onward
   const parseFrom = useCallback(async (step: 'entities' | 'relationships' | 'structure' | 'consideration') => {
     setError(null);
@@ -67,10 +76,7 @@ export default function Home() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ rawText, model }),
         });
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.error || 'Failed to parse entities');
-        }
+        if (!res.ok) throw new Error(await getResError(res, 'Failed to parse entities'));
         currentEntities = await res.json();
         setEntities(currentEntities);
       }
@@ -82,10 +88,7 @@ export default function Home() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ rawText, entities: currentEntities, model }),
         });
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.error || 'Failed to parse relationships');
-        }
+        if (!res.ok) throw new Error(await getResError(res, 'Failed to parse relationships'));
         currentRelationships = await res.json();
         setRelationships(currentRelationships);
       }
@@ -97,10 +100,7 @@ export default function Home() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ rawText, entities: currentEntities, relationships: currentRelationships, model }),
         });
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.error || 'Failed to parse structure');
-        }
+        if (!res.ok) throw new Error(await getResError(res, 'Failed to parse structure'));
         currentStructure = await res.json();
         setStructure(currentStructure);
       }
@@ -118,10 +118,7 @@ export default function Home() {
             model,
           }),
         });
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.error || 'Failed to parse consideration');
-        }
+        if (!res.ok) throw new Error(await getResError(res, 'Failed to parse consideration'));
         const flows = await res.json();
         setConsiderationFlows(flows);
       }
