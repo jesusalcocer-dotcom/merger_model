@@ -31,18 +31,14 @@ export async function callLLM(
     if (!apiKey) throw new Error('OPENAI_API_KEY is not set');
 
     const client = new OpenAI({ apiKey });
-    const response = await client.chat.completions.create({
+    const response = await client.responses.create({
       model,
-      max_tokens: 4096,
-      temperature: 0,
-      response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userMessage },
-      ],
+      instructions: systemPrompt,
+      input: userMessage,
+      text: { format: { type: 'json_object' } },
     });
 
-    const text = response.choices[0]?.message?.content;
+    const text = response.output_text;
     if (!text) throw new Error('Empty response from OpenAI');
     return text;
   }
