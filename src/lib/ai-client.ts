@@ -33,7 +33,7 @@ export async function callLLM(
     const client = new OpenAI({ apiKey });
     const response = await client.responses.create({
       model,
-      instructions: systemPrompt,
+      instructions: systemPrompt + '\n\nRespond with valid JSON only.',
       input: userMessage,
       text: { format: { type: 'json_object' } },
     });
